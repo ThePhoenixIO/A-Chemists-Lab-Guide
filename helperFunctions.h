@@ -6,7 +6,7 @@
 
 bool userBoolInterplation(char input)
 {
-	if (input == 89 || input == 121)
+	if (input == 89 || input == 121 || input == 78 || input == 110)
 	{
 		return true;
 	}

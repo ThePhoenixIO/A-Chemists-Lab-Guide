@@ -1,13 +1,13 @@
 #pragma once
 #include <ctype.h>
 #include "linkedList.h"
-#include "numDescript.h"
 #include "helperFunctions.h"
+#include "input.h"
 
 #ifndef titrationClass
 #define titrationClass
 
-class titration
+class titration: private input
 {
 public:
 	// Constructors
@@ -56,25 +56,6 @@ public:
 	int digitsToDisplay;
 
 private:
-	// Functions
-	void setFlag();
-
-	void clearFlag();
-
-	void throwErrorMsg(const char* errorType);
-
-	template<typename type>
-	type userInput(const char* question, const char* kind, type nullValue, const char* errorCode);
-
-	// Values
-	bool flag;
-
-	bool returnValue;
-
-	int ordnal;
-
-	const char* check;
-
 };
 
 // Constructors
@@ -123,134 +104,6 @@ titration::titration()
 }
 
 // Private functions
-inline void titration::setFlag()
-{
-	this->flag = true;
-}
-
-inline void titration::clearFlag()
-{
-	this->flag = false;
-}
-
-inline void titration::throwErrorMsg(const char* errorType)
-{
-	
-	 if (errorType == "yn")
-	{
-		std::cout << "Error: a charachter other then y,Y,n,N was entered.\nPlase enter either y,Y,n,N.\n\n";
-	}
-	else if (errorType == "ab")
-	{
-		std::cout << "Error: a charachter other then a,A,b,B was entered.\nPlase enter either a,A,b,B.\n\n";
-	}
-	else if (errorType == "int")
-	{
-		std::cout << "Error: a character was entered instead of a number.\nPlase enter a number.\n\n";
-	}
-	else if (errorType = "char")
-	{
-		std::cout << "Error: a number was entered instead of a character.\nPlase enter a character.\n\n";
-	}
-	else
-	{
-		std::cout << "Error: unknown fatal error.\n\n";
-	}
-}
-
-template<typename type>
-inline type titration::userInput(const char* question, const char* kind, type nullValue, const char* errorCode)
-{
-	type input = nullValue;
-	int test = -1;
-	if (kind == "int")
-	{
-		type input = nullValue;
-
-		do
-		{
-			clearFlag();
-			std::cout << question << "\n>>";
-			std::cin >> input;
-
-			if (!std::cin)
-			{
-				std::cin.clear();
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				throwErrorMsg(errorCode);
-				setFlag();
-			}
-		} while (flag);
-
-		return input;
-	}
-	else if (kind == "ordnal")
-	{
-		type input = nullValue;
-
-		do
-		{
-			clearFlag();
-
-			std::printf(question, ordnal , suffix(ordnal));
-			std::cin >> input;
-
-			if (!std::cin)
-			{
-				std::cin.clear();
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				throwErrorMsg(errorCode);
-				setFlag();
-			}
-		} while (flag);
-
-		return input;
-	}
-	else if (kind == "char")
-	{
-		type input = nullValue;
-		int test = -1;
-
-		do
-		{
-			clearFlag();
-			input = nullValue;
-			test = -1;
-
-			std::cout << question << "\n>>";
-			std::cin >> input;
-
-			test = std::isalpha(input);
-
-			if (test == 0)
-			{
-				std::cin.clear();
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				setFlag();
-				throwErrorMsg(errorCode);
-			}
-
-			if (check == "yn" && flag != true)
-			{
-				if (!ynUserInCheck(input))
-				{
-					setFlag();
-					throwErrorMsg("yn");
-				}
-			}
-			else if (check == "ab" && flag != true)
-			{
-				if (!abUserInCheck(input))
-				{
-					setFlag();
-					throwErrorMsg("ab");
-				}
-			}
-		} while (flag);
-
-		return input;
-	}
-}
 
 // Public Functions
 inline void titration::setGenConfig()
@@ -259,18 +112,15 @@ inline void titration::setGenConfig()
 	char input = 116;
 
 	// User input Stong acid or Base
-	this->check = "yn";
-	input = userInput<char>("Is the titrant strong (y or n)?", "char", 116, "char");
+	input = userInput<char>("Is the titrant strong (y or n)?", "char", 116, "char", NULL, "yn");
 	this->strength = userBoolInterplation(input);
 
 	// User input Analite acid or base
-	this->check = "ab";
-	input = userInput<char>("What's in your beaker, an acid(a) or a base(b)?", "char", 116, "char");
+	input = userInput<char>("What's in your beaker, an acid(a) or a base(b)?", "char", 116, "char", NULL, "ab");
 	this->analite = input;
 
 	// User input Multi-protic
-	this->check = "yn";
-	input = userInput<char>("Is this a multi-protic neurtilization (y or n)?", "char", 116, "char");
+	input = userInput<char>("Is this a multi-protic neurtilization (y or n)?", "char", 116, "char", NULL,  "yn");
 	this->multiProtic = userBoolInterplation(input);
 
 	this->returnValue = true;
@@ -289,8 +139,7 @@ inline void titration::setMultiProticConfig()
 	// User input k-values for protons
 	for (int n = 1; n <= numProtons; n++)
 	{
-		this->ordnal = n;
-		kValue = userInput<double>("Is the k-value of the %d%s acidic proton?\n>>", "ordnal", -1, "int");
+		kValue = userInput<double>("Is the k-value of the %d%s acidic proton?\n>>", "ordnal", -1, "int", n);
 		this->kValues.append(kValue);
 	}
 
@@ -338,8 +187,7 @@ inline void titration::setVolumeConfig()
 	// User input of volumes
 	for (int n = 1; n <= numVolumes; n++)
 	{
-		this->ordnal = n;
-		volume = userInput<double>("Is the %d%s volume?\n>>", "ordnal", -1, "int");
+		volume = userInput<double>("Is the %d%s volume?\n>>", "ordnal", -1, "int", n);
 		this->volumes.append(volume);
 	}
 
