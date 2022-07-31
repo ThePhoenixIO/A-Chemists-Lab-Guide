@@ -336,18 +336,15 @@ inline void titration::beginCalc()
 
 inline void titration::calculateStrong()
 {
-	double temp_pH;
-
 	node<double>* currentNode = volumes.getFirst();
 
-	for (int n = 0; n < numVolumes; n++)
+	while(currentNode != NULL)
 	{
 		double currentVolume = currentNode->data;
 
 		if (currentVolume == 0)
 		{
-			temp_pH = -log10(molarAnalite);
-			output(currentVolume, temp_pH);
+			output(currentVolume, -log10(molarAnalite));
 		}
 
 		else if (currentVolume < equivalancePt)
@@ -369,6 +366,7 @@ inline void titration::calculateStrong()
 		{
 			std::cout << "Error: calculateStrong, n" << std::endl;
 		}
+
 		currentNode = currentNode->next;
 	}
 }
@@ -379,7 +377,7 @@ inline void titration::calculateWeak()
 
 	node<double>* currentNode = volumes.getFirst();	
 
-	for (int n = 0; n < numVolumes; n++)
+	while (currentNode != NULL)
 	{
 		double currentVolume = currentNode->data;
 
@@ -504,9 +502,8 @@ inline double titration::strong_pH_calc(double volume)
 	double molTitrant = (volume / 1000) * molarTitrant;
 	double molDifference = abs(molAnalite - molTitrant);
 	double molarTitrant = molDifference / ((mlAnalite + volume) / 1000);
-	double pH = -log10(molarTitrant);
-
-	return pH;
+	
+	return -log10(molarTitrant);
 }
 
 inline double titration::weak_pH_ICE_calc(double volume, double constant, double kValue)
@@ -528,9 +525,7 @@ inline double titration::weak_pH_ICE_calc(double volume, double constant, double
 		std::cout << "Error: weak_pH_ICE_calc, ans" << std::endl;
 	}
 
-	double pH = -log10(moles);
-
-	return pH;
+	return -log10(moles);
 }
 
 inline void titration::output(double volume, double pH, const char* selection)
