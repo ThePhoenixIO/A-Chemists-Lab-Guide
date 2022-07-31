@@ -56,7 +56,7 @@ private:
 	linkedList<double> pH_Values;
 
 	// kc Constant
-	double kc = 1e-14;
+	double kc;
 
 	// Vars
 		// Titrating a strong (s) acid or base
@@ -237,6 +237,7 @@ inline void titration::setAnaliteConfig()
 	}
 
 	this->molAnalite = (mlAnalite / 1000) * molarAnalite;
+	this->kc = (1e-14 / kAnalite);
 	
 	bool checksum = false;
 	input = userInput<char>("Are the above values correct (y or n)?", "char", 116, "char", NULL, "yn");
